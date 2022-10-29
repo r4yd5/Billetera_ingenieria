@@ -30,7 +30,7 @@ class Aplicacion(IAplicacion):
         while True:
 
             alias_cvu = input('ingrese ALIAS o CVU. No ingrese NADA para cancelar: ')
-            os.system('clear')
+            os.system('cls')
             if alias_cvu == '':
                 return
             for usuario_transferir in data:
@@ -50,13 +50,13 @@ class Aplicacion(IAplicacion):
                     while True:
                         decision = input('Seguro que quiere transferir? (s/n): ')
                         if decision == 's':
-                            os.system('clear')
+                            os.system('cls')
                             print('Ingrese el monto a transferir: ')
                             monto = validar_monto(True,user)
                             data[usuario_transferir]['dinero'] += monto
                             data[user]['dinero'] -= monto
                             input('\nTransferencia hecha con exito. Presione ENTER para continuar.')
-                            os.system('clear')
+                            os.system('cls')
                             break
 
                         elif decision == 'n':
@@ -97,7 +97,7 @@ class Aplicacion(IAplicacion):
         db.close()
 
         input('\nMonto cargado con exito. Presione ENTER para continuar.')
-        os.system('clear')
+        os.system('cls')
 
     def pagar(self, user) -> None:
 
@@ -114,7 +114,7 @@ class Aplicacion(IAplicacion):
         db.close()
 
         input('\nMonto cargado con exito. Presione ENTER para continuar.')
-        os.system('clear')
+        os.system('cls')
 
 class Usuario(IUsuario):
 
@@ -139,7 +139,7 @@ class Usuario(IUsuario):
                 }
             }
 
-            os.system('clear')
+            os.system('cls')
             if es_valido(contenido_db, username):
                 if validar_cuenta_con_mail(contenido_db[username]['email']):
                     break

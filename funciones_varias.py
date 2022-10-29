@@ -155,7 +155,7 @@ def validar_monto(para_transferir=False,user=None) -> float:
                 return monto
                 break
             else:
-                os.system('clear')
+                os.system('cls')
                 print('Monto invalido.')
 
             db.close()
@@ -215,11 +215,11 @@ def validar_cuenta_con_mail(correo) -> bool:
 
             elif verificar_codigo == '':
                 input('Operacion cancelada. Pulse ENTER para continuar.')
-                os.system('clear')
+                os.system('cls')
                 return False
 
             else:
-                os.system('clear')
+                os.system('cls')
                 print('Codigo incorrecto. Vuelva a introducirlo\n')
 
     except:
