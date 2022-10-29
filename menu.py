@@ -24,11 +24,15 @@ while flag_aplicacion_iniciada:
 
             if usuario_iniciado.iniciar_sesion():
                 os.system('clear')
-                print('Inicio de sesion correcto.')
+                input(
+                    'Inicio de sesion correcto.\n '
+                    'Presione ENTER para continuar.'
+                )
 
                 flag_usuario_inciado = True
 
                 while flag_usuario_inciado:
+                    os.system('clear')
                     print(
                         '--------------------------'
                         '\n1.Cargar dinero.'
@@ -89,3 +93,6 @@ while flag_aplicacion_iniciada:
 
     else:
         print('Ingrese una opcion correcta.')
+
+
+#dmatiaszurita@gmail.com

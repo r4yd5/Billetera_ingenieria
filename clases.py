@@ -6,7 +6,7 @@ Disenar una aplicacion que siga la logica de una billetera virtual.
 
 Funcioniones principales:
 - Registro/Login de usuarios.
-- Validacion del celular por medio de mensajes de texto.
+- Validacion del correo electronio por medio de un codigo de verificacion.
 - Recarga de dinero.
 - Transferencias a otros usuarios.
 - Pagar por medio de la billetera.
@@ -21,17 +21,18 @@ import os
 
 class Aplicacion(IAplicacion):
 
-    def hacer_transferencia(self, user):
+    def hacer_transferencia(self, user) -> None:
 
-        with open('db.json', 'r') as db:
+        with open('JSON/db.json', 'r') as db:
             data = json.load(db)
 
         db.close()
         while True:
 
-            alias_cvu = input('ingrese ALIAS o CVU: ')
+            alias_cvu = input('ingrese ALIAS o CVU. No ingrese NADA para cancelar: ')
             os.system('clear')
-
+            if alias_cvu == '':
+                return
             for usuario_transferir in data:
                 if (data[usuario_transferir]['alias'] == alias_cvu or data[usuario_transferir]['cvu'] == alias_cvu):
 
@@ -64,7 +65,7 @@ class Aplicacion(IAplicacion):
                         else:
                             print('Ingrese una opcion valida.')
 
-                    with open("db.json", "w") as db:
+                    with open("JSON/db.json", "w") as db:
                         json.dump(data, db)
                         flag_transferencia = True
 
@@ -79,9 +80,9 @@ class Aplicacion(IAplicacion):
             else:
                 print('Ingrese un CVU o ALIAS valido.\n')
 
-    def cargar_dinero(self, user):
+    def cargar_dinero(self, user) -> None:
 
-        with open("db.json", "r") as db:
+        with open("JSON/db.json", "r") as db:
             data = json.load(db)
 
         db.close()
@@ -90,7 +91,7 @@ class Aplicacion(IAplicacion):
         data[user.username]['dinero'] += validar_monto()
 
 
-        with open("db.json", "w") as db:
+        with open("JSON/db.json", "w") as db:
             json.dump(data, db)
 
         db.close()
@@ -98,16 +99,16 @@ class Aplicacion(IAplicacion):
         input('\nMonto cargado con exito. Presione ENTER para continuar.')
         os.system('clear')
 
-    def pagar(self, user):
+    def pagar(self, user) -> None:
 
-        with open('db.json', 'r') as db:
+        with open('JSON/db.json', 'r') as db:
             data = json.load(db)
 
         print('Ingrese el monto que desea pagar:')
         monto_pagar = validar_monto(True, user)
         data[user]['dinero'] -= monto_pagar
         
-        with open('db.json', 'w') as db:
+        with open('JSON/db.json', 'w') as db:
             json.dump(data, db)
 
         db.close()
@@ -132,7 +133,7 @@ class Usuario(IUsuario):
                     'password': input('Ingrese una contrasenia: '),
                     'nombre': input('Ingrese nombre: '),
                     'apellido': input('Ingrese apellido: '),
-                    'email': Input('Ingrese email: '),
+                    'email': input('Ingrese email: '),
                     'tel': input('Ingrese tel: '),
                     'dni': input('Ingrese dni: ')
                 }
@@ -140,11 +141,13 @@ class Usuario(IUsuario):
 
             os.system('clear')
             if es_valido(contenido_db, username):
-                break
+                if validar_cuenta_con_mail(contenido_db[username]['email']):
+                    break
+                else:
+                    return
 
-            if validar_cuenta_con_mail(contenido_db):
 
-        with open('db.json', 'r+') as archivo:
+        with open('JSON/db.json', 'r+') as archivo:
             data = json.load(archivo)
             data.update(contenido_db)
             archivo.seek(0)
@@ -158,9 +161,9 @@ class Usuario(IUsuario):
 
         return validar_inicio_sesion(self.username, self.password)
 
-    def mostrar_datos(self):
+    def mostrar_datos(self) -> None:
 
-        db = open('db.json', 'r')
+        db = open('JSON/db.json', 'r')
         contenido = json.load(db)
 
         print(
@@ -177,9 +180,9 @@ class Usuario(IUsuario):
 
         db.close()
 
-    def actualizar_datos_usuario(self):
+    def actualizar_datos_usuario(self) -> None:
 
-        with open("db.json", "r") as db:
+        with open("JSON/db.json", "r") as db:
             contenido = json.load(db)
 
         nombre = input('Nombre: ')
@@ -189,12 +192,12 @@ class Usuario(IUsuario):
         validar_actualizar_datos(
             self.username, nombre, apellido, telefono, contenido)
 
-        with open("db.json", "w") as db:
+        with open("JSON/db.json", "w") as db:
             json.dump(contenido, db)
 
         db.close()
 
-    def cerrar_sesion(self):
+    def cerrar_sesion(self) -> None:
 
         self.username = ''
         self.password = ''

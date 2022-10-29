@@ -5,39 +5,39 @@ import os
 import smtplib
 from email.message import EmailMessage
 
-def es_valido(user,username) -> bool:
-    c = 0
+def es_valido(contenido,username) -> bool:
+    count_errors = 0
     caracteres = 'qwertyuiopasdfghjklñzxcvbnmQWERTYUIOPASDFGHJKLÑZXCVBNM'
 
     #Si usuario esta en db
     
-    db = open('db.json', 'r')
-    contenido=json.load(db)
+    db = open('JSON/db.json', 'r')
+    data=json.load(db)
     
-    if username in contenido:
+    if username in data:
         print('El nombre de usuario ya esta en uso, prueba con otro.')
-        c += 1
+        count_errors += 1
         db.close()
     
     #Validacion contrasenia mayor 8 caracteres
-    if len(user[username]['password']) < 9:
+    if len(contenido[username]['password']) < 9:
         print('La contrasenia debe contener mas de 8 caracteres.')
-        c += 1
+        count_errors += 1
     
     #validacion contrasenia numerica
-    for i in (user[username]['password']):
+    for i in (contenido[username]['password']):
 
         if i not in caracteres:
-            if i == len(user[username]['password']):
-                c += 1
+            if i == len(contenido[username]['password']):
+                count_errors += 1
                 print('La contrasenia no puede contener solo numeros.')
         else: 
             break
 
     #Validacion contrasenia contiene mayuscula
-    cc = 0
-    for i in user[username]['password']:
-        cc += 1
+    char_password = 0
+    for i in contenido[username]['password']:
+        char_password += 1
         try:
             i = int(i)
         except:
@@ -47,34 +47,53 @@ def es_valido(user,username) -> bool:
                 break
         else:
             pass
-        if cc == len(user[username]['password']):
-            c += 1
+        if char_password == len(contenido[username]['password']):
+            count_errors += 1
             print('La contrasenia debe contener al menos una mayuscula.')
 
     #Validar email
-    def es_correo_valido(correo):                
+    def es_correo_valido(correo) -> bool:                
         expresion_regular = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
         return re.match(expresion_regular, correo) is not None
 
-
-
-    if es_correo_valido(user[username]['email']):
+    if es_correo_valido(contenido[username]['email']):
         pass
     else:
         print('Ingrese un formato de email valido.')
-        c += 1
+        count_errors += 1
 
+    #validar numero tel
+    if len(contenido[username]['tel']) == 10 or len(contenido[username]['tel']) == 9:
+        try:
+            int(contenido[username]['tel'])
+        except:
+            count_errors += 1
+            print('El numero de telefono no es valido.')
+    else:
+        count_errors += 1
+        print('El numero de telefono no es valido.')
 
-    if c == 0:
+    #validar DNI
+    if len(contenido[username]['dni']) == 8 or len(contenido[username]['dni']) == 7:
+        try:
+            int(contenido[username]['dni'])
+        except:
+            count_errors += 1
+            print('El DNI no es valido.')
+    else:
+        count_errors += 1
+        print('El DNI no es valido.')
+
+    if count_errors == 0:
         return True
     else:
+        print('\n')
         return False
          
 def validar_inicio_sesion(username, password) -> bool:
 
-    db = open('db.json', 'r')
+    db = open('JSON/db.json', 'r')
     contenido=json.load(db)
-
 
     if username in contenido and password == contenido[username]['password']:
         db.close()  
@@ -85,7 +104,7 @@ def validar_inicio_sesion(username, password) -> bool:
 
 def random_alias(username) -> str:
 
-    with open('alias.json') as alias:
+    with open('JSON/alias.json') as alias:
         data = json.load(alias)
 
     
@@ -99,7 +118,7 @@ def random_alias(username) -> str:
 
 
 def random_cvu(username) -> int:
-    with open('cvu.json') as cvu:
+    with open('JSON/cvu.json') as cvu:
         data = json.load(cvu)
 
     random_index = random.randint(0, 1000-1)
@@ -110,7 +129,7 @@ def random_cvu(username) -> int:
     return cvu_random
 
 
-def validar_actualizar_datos(user, nom, ape, tel, data):
+def validar_actualizar_datos(user, nom, ape, tel, data) -> None:
 
         if nom != '':
             data[user]['nombre'] = nom
@@ -121,12 +140,12 @@ def validar_actualizar_datos(user, nom, ape, tel, data):
         if tel != '':
             data[user]['tel'] = tel
 
-def validar_monto(para_transferir=False,user=None):
+def validar_monto(para_transferir=False,user=None) -> float:
 
     while True:
         if para_transferir:
             
-            with open('db.json', 'r') as db:
+            with open('JSON/db.json', 'r') as db:
                 data = json.load(db)
 
             print(f'Dinero en la cuenta: {data[user]["dinero"]}')
@@ -151,9 +170,10 @@ def validar_monto(para_transferir=False,user=None):
                 print('Monto invalido.')
 
 
-def validar_cuenta_con_mail(correo):
+def validar_cuenta_con_mail(correo) -> bool:
+    
     try:
-        db = open('codigo_verificacion.json', 'r')
+        db = open('JSON/codigo_verificacion.json', 'r')
         data = json.load(db)
 
         random_index = random.randint(1, 1000)
@@ -184,29 +204,24 @@ def validar_cuenta_con_mail(correo):
         server.quit()
     
         while True:
-            verificar_codigo = input('Ingrese el codigo de verificacion que le llego a su Email: ')
+            print(
+                'Ingrese el codigo de verificacion que le llego a su Email.\n'
+                'No introduzca nada para cancelar: '
+            )
+            verificar_codigo = input()
             if verificar_codigo == codigo:
-                print('Codigo correcto.')
-                break
-            elif vericar_codigo == '':
-                print('Codigo incorrecto. Vuelva a introducirlo')
+                input('\nCuenta creada con exito. Pulse ENTER para continuar.')
+                return True
+
+            elif verificar_codigo == '':
+                input('Operacion cancelada. Pulse ENTER para continuar.')
+                os.system('clear')
+                return False
+
+            else:
+                os.system('clear')
+                print('Codigo incorrecto. Vuelva a introducirlo\n')
+
     except:
         print('Correo no valido. Cuenta no creada.')
-"""
-cap 5
-administracion de la responsabilidad y la etica
-responsabilidad social
-obligacion sensibilidad y responsabilidad
-administracion verde y sustentabilidad
-evaluaciones de las administrativas verdes (no)
-los gerentes y el comportamiento etico (no)
-etica en un contexto internacional (140 libro cuadro) - intensidad del problema etico
-principios del pacto mundial de la onu
-
-cap 6 toma de deciones
-el proceso de la toma de decisiones - 8 pasos 
-la toma de decisiones gerenciales - racionalidad, racionalidad limititada, toma de decisiones intituiva (fasetas intucion)
-tipos de decsiones y condiciones para la toma de decsiones
-pag 174- cuadro proceso toma de deciones
-"""
-
+        return False
