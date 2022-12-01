@@ -18,6 +18,11 @@ from funciones_varias import *
 import json
 import os
 
+if (os.name == 'nt'):
+    borrar = 'cls'
+else:
+    borrar = 'clear'
+
 
 class Aplicacion(IAplicacion):
 
@@ -30,7 +35,7 @@ class Aplicacion(IAplicacion):
         while True:
 
             alias_cvu = input('ingrese ALIAS o CVU. No ingrese NADA para cancelar: ')
-            os.system('cls')
+            os.system(borrar)
             if alias_cvu == '':
                 return
             for usuario_transferir in data:
@@ -50,14 +55,17 @@ class Aplicacion(IAplicacion):
                     while True:
                         decision = input('Seguro que quiere transferir? (s/n): ')
                         if decision == 's':
-                            os.system('cls')
-                            print('Ingrese el monto a transferir: ')
+                            os.system(borrar)
                             monto = validar_monto(True,user)
-                            data[usuario_transferir]['dinero'] += monto
-                            data[user]['dinero'] -= monto
-                            input('\nTransferencia hecha con exito. Presione ENTER para continuar.')
-                            os.system('cls')
-                            break
+                            try:
+                                data[usuario_transferir]['dinero'] += monto
+                                data[user]['dinero'] -= monto
+                                input('\nTransferencia hecha con exito. Presione ENTER para continuar.')
+                                os.system(borrar)
+                                break
+                            except:
+                                input(f'{monto} Pulse ENTER para volver.')
+                                return
 
                         elif decision == 'n':
                             return
@@ -97,24 +105,26 @@ class Aplicacion(IAplicacion):
         db.close()
 
         input('\nMonto cargado con exito. Presione ENTER para continuar.')
-        os.system('cls')
+        os.system(borrar)
 
     def pagar(self, user) -> None:
 
         with open('JSON/db.json', 'r') as db:
             data = json.load(db)
-
-        print('Ingrese el monto que desea pagar:')
-        monto_pagar = validar_monto(True, user)
-        data[user]['dinero'] -= monto_pagar
         
+        monto_pagar = validar_monto(True, user)
+        try:
+            data[user]['dinero'] -= monto_pagar
+            input('\nMonto cargado con exito. Presione ENTER para continuar.')
+        except:
+            input(f'{monto_pagar} Presione ENTER para continuar.')
+
         with open('JSON/db.json', 'w') as db:
             json.dump(data, db)
 
         db.close()
 
-        input('\nMonto cargado con exito. Presione ENTER para continuar.')
-        os.system('cls')
+        os.system(borrar)
 
 class Usuario(IUsuario):
 
@@ -139,7 +149,7 @@ class Usuario(IUsuario):
                 }
             }
 
-            os.system('cls')
+            os.system(borrar)
             if es_valido(contenido_db, username):
                 if validar_cuenta_con_mail(contenido_db[username]['email']):
                     break

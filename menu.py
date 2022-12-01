@@ -1,12 +1,17 @@
 from clases import *
 import os
 
+if (os.name == 'nt'):
+    borrar = 'cls'
+else:
+    borrar = 'clear'
+
 usuario_iniciado = Usuario()
 billetera = Aplicacion()
 
 flag_aplicacion_iniciada = True
 while flag_aplicacion_iniciada:
-    os.system('cls')
+    os.system(borrar)
     
     print(
         '---------------------------------------'
@@ -17,13 +22,13 @@ while flag_aplicacion_iniciada:
         '\n---------------------------------------'
     )
     opc = int(input('Ingrese una opcion: '))
-    os.system('cls')
+    os.system(borrar)
 
     if opc == 1:
         while True:
 
             if usuario_iniciado.iniciar_sesion():
-                os.system('cls')
+                os.system(borrar)
                 input(
                     'Inicio de sesion correcto.\n '
                     'Presione ENTER para continuar.'
@@ -32,7 +37,7 @@ while flag_aplicacion_iniciada:
                 flag_usuario_inciado = True
 
                 while flag_usuario_inciado:
-                    os.system('cls')
+                    os.system(borrar)
                     print(
                         '--------------------------'
                         '\n1.Cargar dinero.'
@@ -48,24 +53,24 @@ while flag_aplicacion_iniciada:
                     opc = int(input('Ingrese una opcion: '))
 
                     if opc == 1:
-                        os.system('cls')
+                        os.system(borrar)
                         billetera.cargar_dinero(usuario_iniciado)
 
                     elif opc == 2:
-                        os.system('cls')
+                        os.system(borrar)
                         billetera.hacer_transferencia(usuario_iniciado.username)
 
                     elif opc == 3:
-                        os.system('cls')
+                        os.system(borrar)
                         billetera.pagar(usuario_iniciado.username)
 
                     elif opc == 4:
-                        os.system('cls')
+                        os.system(borrar)
                         usuario_iniciado.mostrar_datos()
                         input('\nPresione ENTER para continuar.')
 
                     elif opc == 5:
-                        os.system('cls')
+                        os.system(borrar)
                         usuario_iniciado.actualizar_datos_usuario()
 
                     elif opc == 6:
@@ -78,7 +83,7 @@ while flag_aplicacion_iniciada:
                         break
 
             else:
-                os.system('cls')
+                os.system(borrar)
                 print('Usuario/contrasenia incorrectos.\n')
                 continue
 
@@ -86,7 +91,7 @@ while flag_aplicacion_iniciada:
 
     elif opc == 2:
         usuario_iniciado.crear_usuario()
-        os.system('cls')
+        os.system(borrar)
 
     elif opc == 3:
         break

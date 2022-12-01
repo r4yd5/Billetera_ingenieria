@@ -5,6 +5,12 @@ import os
 import smtplib
 from email.message import EmailMessage
 
+if (os.name == 'nt'):
+    borrar = 'cls'
+else:
+    borrar = 'clear'
+
+
 def es_valido(contenido,username) -> bool:
     count_errors = 0
     caracteres = 'qwertyuiopasdfghjklñzxcvbnmQWERTYUIOPASDFGHJKLÑZXCVBNM'
@@ -148,14 +154,17 @@ def validar_monto(para_transferir=False,user=None) -> float:
             with open('JSON/db.json', 'r') as db:
                 data = json.load(db)
 
+            if (data[user]['dinero'] == 0):
+                return 'No hay saldo en la cuenta.'
+
             print(f'Dinero en la cuenta: {data[user]["dinero"]}')
-            monto = float(input())
+            monto = float(input('Ingrese el monto: '))
 
             if data[user]['dinero'] >= monto and monto > 0 and monto <= 10000:
                 return monto
                 break
             else:
-                os.system('cls')
+                os.system(borrar)
                 print('Monto invalido.')
 
             db.close()
@@ -215,11 +224,11 @@ def validar_cuenta_con_mail(correo) -> bool:
 
             elif verificar_codigo == '':
                 input('Operacion cancelada. Pulse ENTER para continuar.')
-                os.system('cls')
+                os.system(borrar)
                 return False
 
             else:
-                os.system('cls')
+                os.system(borrar)
                 print('Codigo incorrecto. Vuelva a introducirlo\n')
 
     except:
